@@ -136,3 +136,61 @@ authRoutes.post('/login',
 )
 
 server.use('/auth', authRoutes)
+
+// Create API routes
+const apiRoutes = express.Router()
+
+apiRoutes.use(isAuthenticated)
+
+apiRoutes.get('/me', (req, res) => {
+  res.json({ user: req.user })
+})
+
+// Get all of a user's exclamations
+apiRoutes.get('/exclamations',
+  hasScope('read'),
+  (req, res) => {
+    const exclamations = exclamationData
+
+    res.json({ exclamations })
+  }
+)
+
+// Add an exclamation
+apiRoutes.post('/exclamations',
+  hasScope('add'),
+  (req, res) => {
+    const { username } = req.user
+    const { text } = req.body
+    const exclamation = {
+      id: uuid.v4(),
+      text,
+      user: username,
+    }
+
+    exclamationData.unshift(exclamation)
+
+    res.status(201).json({ exclamation })
+  }
+)
+
+// Delete an exclamation
+apiRoutes.delete('/exclamations/:id',
+  canDelete,
+  (req, res) => {
+    const { id } = req.params
+    const exclamationIndex = exclamationData.findIndex(exc => exc.id === id)
+
+    exclamationData.splice(exclamationIndex, 1)
+
+    res.sendStatus(204)
+  }
+)
+
+server.use('/api', apiRoutes)
+
+// Start the server
+server.listen(PORT, () => {
+  console.log(`The API is listening on port ${PORT}`)
+})
+
