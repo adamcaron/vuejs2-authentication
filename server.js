@@ -123,3 +123,16 @@ server.get('/dashboard',
     res.render('dashboard')
   }
 )
+
+// Create auth routes
+const authRoutes = express.Router()
+
+authRoutes.post('/login',
+  passport.authenticate('local', {
+    failureRedirect: '/',
+    successRedirect: '/dashboard',
+    failureFlash: true
+  })
+)
+
+server.use('/auth', authRoutes)
