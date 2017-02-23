@@ -107,3 +107,19 @@ function isAuthenticated(req,res,next) {
 
   return next()
 }
+
+// Create home route
+server.get('/', (req, res) => {
+  if (req.user) {
+    return res.redirect('/dashboard')
+  }
+
+  return res.render('index')
+})
+
+server.get('/dashboard',
+  isAuthenticated,
+  (req, res) => {
+    res.render('dashboard')
+  }
+)
