@@ -11,7 +11,7 @@ const appData = require('./data.json')
 
 // Create app data (mimics a DB)
 const userData = appData.users
-const exclamationData = app.exclamations
+const exclamationData = appData.exclamations
 
 function getUser(username) {
   const user = userData.find(u => u.username === username)
@@ -30,8 +30,8 @@ server.use(session({
   secret: process.env.SESSION_SECRET || 'awesomecookiesecret',
   resave: false,
   saveUninitialized: false,
-  store: new MongoSTore({
-    url: process.env.MONGO_URL || 'monogodb://localhost/vue2-auth'
+  store: new MongoStore({
+    url: process.env.MONGO_URL || 'mongodb://localhost/vue2-auth'
   })
 }))
 server.use(flash())
@@ -71,7 +71,7 @@ passport.deserializeUser((username, done) => {
 
 // Create custom middleware functions
 function hasScope(scope) {
-  return (req, res, next) +> {
+  return (req, res, next) => {
     const { scopes } = req.user
 
     if (!scopes.includes(scope)) {
